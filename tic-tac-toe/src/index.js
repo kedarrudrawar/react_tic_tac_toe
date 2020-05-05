@@ -61,7 +61,6 @@ class Game extends React.Component {
     }
 
     handleClick(i){
-        console.log(i);
         let ascending = this.state.ascendingMoves;
         let history, current;
 
@@ -79,12 +78,7 @@ class Game extends React.Component {
             return;
         }
 
-        // console.log(squares[i]);
         squares[i] = this.state.xIsNext ? 'X' : 'O';
-        // console.log(squares[i]);
-
-        console.log('history before move');
-        console.log(history);
 
         let nextHistory = {squares: squares};
         if (this.state.ascendingMoves){
@@ -94,10 +88,7 @@ class Game extends React.Component {
             history = [nextHistory].concat(history);
         }
 
-
         let nextStep = this.state.ascendingMoves ? this.state.stepNumber + 1 : 0;
-        console.log('new history after move:');
-        console.log(history);
         this.setState({
             history: history,
             stepNumber: nextStep,
@@ -119,9 +110,6 @@ class Game extends React.Component {
             else{
                 if (move < l - 1) previous = history[move + 1];
             }
-
-            // console.log(previous);
-
 
             let alteredPosition = previous ? this.findDifference(previous, history[move]) : 0;
             let row = Math.floor(alteredPosition / 3);
