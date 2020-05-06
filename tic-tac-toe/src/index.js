@@ -15,7 +15,22 @@ class Game extends React.Component {
             xIsNext: true,
             ascendingMoves: true,
             winningSquares: [],
+            draw: false,
         }
+    }
+
+    checkDraw(squares) {
+        for(let s of squares){
+            if (! s){
+                this.setState({
+                    draw: false
+                });
+                return;
+            }
+        }
+        this.setState({
+            draw: true
+        });
     }
 
     calculateWinner(squares) {
@@ -39,6 +54,7 @@ class Game extends React.Component {
                 return squares[a];
             }
         }
+        // set empty list for no winner post jump
         this.setState({
             winningSquares: [],
         });
@@ -67,6 +83,7 @@ class Game extends React.Component {
             xIsNext: !this.state.xIsNext,
         });
 
+        this.checkDraw(squares);
         this.calculateWinner(squares);
     }
 
@@ -128,11 +145,14 @@ class Game extends React.Component {
         const current = history[this.state.stepNumber];
         const winner = this.state.winningSquares;
         const moves = this.historyToMoves();
+        const draw = this.state.draw;
 
         let status;
 
         if (winner.length > 0) {
             status = 'Winner: ' + current.squares[winner[0]];
+        } else if (draw){
+            status = 'Draw!';
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
