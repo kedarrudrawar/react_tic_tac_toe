@@ -129,6 +129,7 @@ class Game extends React.Component {
         });
 
         let squares = this.state.history[step].squares;
+        this.checkDraw(squares);
         this.calculateWinner(squares);
    }
 
