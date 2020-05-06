@@ -39,6 +39,9 @@ class Game extends React.Component {
                 return squares[a];
             }
         }
+        this.setState({
+            winningSquares: [],
+        });
         return null;
     }
 
@@ -49,7 +52,7 @@ class Game extends React.Component {
         current = history[this.state.stepNumber];
 
         const squares = current.squares.slice();
-        if (this.calculateWinner(squares) || squares[i]){
+        if (this.state.winningSquares.length > 0 || squares[i]){
             return;
         }
 
@@ -107,7 +110,10 @@ class Game extends React.Component {
             stepNumber: step,
             xIsNext: (step % 2) === 0,
         });
-    }
+
+        let squares = this.state.history[step].squares;
+        this.calculateWinner(squares);
+   }
 
     findDifference(previous, current){
         for(let i = 0; i < current.squares.length; i++){

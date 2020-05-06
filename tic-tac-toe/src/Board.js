@@ -23,8 +23,8 @@ function Square(props) {
 
     return (
         <button
-            style={combined}
-            // className="square"
+            style={winningStyle}
+            className="square"
             onClick={props.onClick}
         >
             {props.value}
@@ -34,10 +34,6 @@ function Square(props) {
 }
 
 export default class Board extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     renderSquare(i) {
         return (
             <Square
