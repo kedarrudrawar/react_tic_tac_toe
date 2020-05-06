@@ -112,17 +112,10 @@ class Game extends React.Component {
     }
 
     handleClick(i){
-        let ascending = this.state.ascendingMoves;
         let history, current;
 
-        if (ascending) {
-            history = this.state.history.slice(0, this.state.stepNumber + 1);
-            current = history[this.state.stepNumber];
-        }
-        else{
-            history = this.state.history.slice(this.state.stepNumber, this.state.history.length);
-            current = history[0]
-        }
+        history = this.state.history.slice(0, this.state.stepNumber + 1);
+        current = history[this.state.stepNumber];
 
         const squares = current.squares.slice();
         if (this.calculateWinner(squares) || squares[i]){
@@ -132,17 +125,11 @@ class Game extends React.Component {
         squares[i] = this.state.xIsNext ? 'X' : 'O';
 
         let nextHistory = {squares: squares};
-        if (this.state.ascendingMoves){
-            history = history.concat([nextHistory]);
-        }
-        else{
-            history = [nextHistory].concat(history);
-        }
+        history = history.concat([nextHistory]);
 
-        let nextStep = this.state.ascendingMoves ? this.state.stepNumber + 1 : 0;
         this.setState({
             history: history,
-            stepNumber: nextStep,
+            stepNumber: this.state.stepNumber + 1,
             xIsNext: !this.state.xIsNext,
         });
 
@@ -151,31 +138,24 @@ class Game extends React.Component {
 
     historyToMoves = () => {
         let history = this.state.history;
-        let ascending = this.state.ascendingMoves;
-        let l = history.length;
 
-         return history.map((step, move) => {
-            let actualMoveIdx = ascending ? move : l - move - 1;
+        let moves = history.map((step, move) => {
             let previous = null;
-            if (ascending){
-                if (move > 0) previous = history[move - 1];
-            }
-            else{
-                if (move < l - 1) previous = history[move + 1];
-            }
+            if (move > 0) previous = history[move - 1];
 
+            // find which position was changed to record coordinate
             let alteredPosition = previous ? this.findDifference(previous, history[move]) : 0;
             let row = Math.floor(alteredPosition / 3);
             let col = alteredPosition % 3;
 
-            let desc = actualMoveIdx ?
-                'Go to move #' + actualMoveIdx + ' - (' + row + ',' + col + ')' :
+            let desc = move ?
+                'Go to move #' + move + ' - (' + row + ',' + col + ')' :
                 'Go to game start';
 
             // bold the current state
             let button = move === this.state.stepNumber ?
-                <button onClick={() => this.jumpTo(actualMoveIdx)}><b>{desc}</b></button> :
-                <button onClick={() => this.jumpTo(actualMoveIdx)}> {desc} </button>;
+                <button onClick={() => this.jumpTo(move)}><b>{desc}</b></button> :
+                <button onClick={() => this.jumpTo(move)}> {desc} </button>;
 
             return (
                 <li key={move}>
@@ -184,11 +164,14 @@ class Game extends React.Component {
             )
         });
 
+        if (! this.state.ascendingMoves)
+            moves = moves.reverse();
+
+        return moves;
+
     };
 
     jumpTo(step){
-        let l = this.state.history.length;
-        step = this.state.ascendingMoves ? step : l - step - 1;
         this.setState({
             stepNumber: step,
             xIsNext: (step % 2) === 0,
@@ -209,7 +192,6 @@ class Game extends React.Component {
         const winner = this.state.winningSquares;
         const moves = this.historyToMoves();
 
-        // console.log(this.state.winningSquares);
         let status;
 
         if (winner.length > 0) {
@@ -233,8 +215,6 @@ class Game extends React.Component {
                     <button onClick={() => {
                         this.setState({
                             ascendingMoves: !this.state.ascendingMoves,
-                            history: this.state.history.reverse(),
-                            stepNumber: this.state.history.length - (this.state.stepNumber + 1),
                         })
                     }}>
                         {order}
